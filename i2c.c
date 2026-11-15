@@ -54,7 +54,7 @@ uint8_t repeatedStart(void)
     return 0;
 }
 
-uint8_t setAddressWrite(uint8_t address)
+uint8_t setAddressRead(uint8_t address)
 {
     address = address << 1;
     address++;
@@ -71,9 +71,9 @@ uint8_t setAddressWrite(uint8_t address)
 
 uint8_t readBytes(uint8_t data[] , uint8_t byteCount)
 {
-    for (uint8_t i = 0; i < byteCount; i++)
+    for (uint8_t i = 0; i < byteCount - 1; i++)
     {
-        TWCR = (1<<TWINT)|(1<<TWEN);
+        TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWEA);
         while (!(TWCR & (1<<TWINT)));
         if ((TWSR & 0xF8)!= 0x50)
         {
@@ -88,7 +88,7 @@ uint8_t readBytes(uint8_t data[] , uint8_t byteCount)
     {
         return 1;
     }
-    data[byteCount] = TWDR;
+    data[byteCount - 1] = TWDR;
     return 0;
 }
 
@@ -97,19 +97,13 @@ uint8_t writeBytes(uint8_t data[], uint8_t byteCount)
 {
     for(uint8_t i = 0; i < byteCount; i++)
     {
-        TWCR = (1<<TWINT)|(1<<TWEN)
-            while(!(TWCR & (1<<TWINT)));
-        if ((TWST & 0F8)!= 0x28)
+        TWDR = data[i];
+        TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWSTO);
+        while(!(TWCR & (1<<TWINT)));
+        if ((TWSR & 0xF8)!= 0x28)
         {
             return 1;
         }
-    }
-
-    TWCR = (1<<TWINT)|(1<<TWEN)
-        while(!(TWCR & (1<<TWINT)));
-    if ((TWST & 0F8)!= 0x58)
-    {
-        return 1;
     }
     return 0;
 }
