@@ -71,6 +71,11 @@ uint8_t setAddressRead(uint8_t address)
 
 uint8_t readBytes(uint8_t data[] , uint8_t byteCount)
 {
+    if (byteCount == 0)
+    {
+        return 1;
+    }
+
     for (uint8_t i = 0; i < byteCount - 1; i++)
     {
         TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWEA);
@@ -98,7 +103,7 @@ uint8_t writeBytes(uint8_t data[], uint8_t byteCount)
     for(uint8_t i = 0; i < byteCount; i++)
     {
         TWDR = data[i];
-        TWCR = (1<<TWINT)|(1<<TWEN)|(1<<TWSTO);
+        TWCR = (1<<TWINT)|(1<<TWEN);
         while(!(TWCR & (1<<TWINT)));
         if ((TWSR & 0xF8)!= 0x28)
         {
