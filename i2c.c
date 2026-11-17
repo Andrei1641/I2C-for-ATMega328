@@ -117,3 +117,29 @@ void stop(void)
 {
     TWCR = (1<<TWINT)|(1<<TWSTO)|(1<<TWEN);
 }
+
+
+uint8_t read(uint8_t *returnInfo, uint32_t countOfReturnBytes, uint8_t moduleAddress, uint32_t requestReg)
+{
+    uint8_t check = 0;
+    check |= start();
+    check |= setAddressWrite(moduleAddress);
+    check |= requestRegister(requestReg);
+    check |= repeatedStart();
+    check |= setAddressRead(moduleAddress);
+    check |= readBytes(returnInfo, countOfReturnBytes);
+    stop();
+    return check;
+}
+
+
+uint8_t write(uint8_t *sendInfo, uint32_t countOfSendBytes, uint8_t moduleAddress, uint32_t requestReg)
+{
+    uint8_t check = 0;
+    check |= start();
+    check |= setAddressWrite(moduleAddress);
+    check |= requestRegister(requestReg);
+    check |= writeBytes(sendInfo, countOfSendBytes);
+    stop();
+    return check;
+}
